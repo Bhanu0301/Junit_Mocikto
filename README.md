@@ -1,3 +1,4 @@
+````markdown
 # Junit_Mocikto
 
 Learning JUnit and Mockito
@@ -71,8 +72,10 @@ void testException() {
         int result = 10 / 0;
     });
 }
+````
 
-````markdown
+---
+
 ## How to Write Unit Tests with JUnit
 
 JUnit simplifies writing and running unit tests for Java applications. Follow these steps to create effective unit tests.
@@ -94,7 +97,7 @@ Add the following dependency to your `pom.xml`:
         <scope>test</scope>
     </dependency>
 </dependencies>
-````
+```
 
 #### Using Gradle (JUnit 5)
 
@@ -262,4 +265,3 @@ jobs:
 
 ```
 ```
-
