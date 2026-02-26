@@ -488,4 +488,161 @@ class UserServiceTest {
 * **Assertions**: Validates output using JUnit assertions.
 * **Verification**: Ensures interactions occurred as expected.
 
+## How to Use Mockito with JUnit?
+
+Mockito integrates seamlessly with JUnit to create effective unit tests by mocking dependencies, defining expected behavior, and verifying method calls.
+
+Below is a step-by-step guide to using Mockito with JUnit.
+
+---
+
+### 1. Add Mockito and JUnit Dependencies
+
+Ensure your project includes Mockito and JUnit 5 dependencies.
+
+#### Maven (`pom.xml`)
+
+```xml
+<dependency>
+    <groupId>org.mockito</groupId>
+    <artifactId>mockito-core</artifactId>
+    <version>5.2.0</version>
+    <scope>test</scope>
+</dependency>
+
+<dependency>
+    <groupId>org.junit.jupiter</groupId>
+    <artifactId>junit-jupiter-api</artifactId>
+    <version>5.9.0</version>
+    <scope>test</scope>
+</dependency>
+````
+
+#### Gradle (`build.gradle`)
+
+```gradle
+testImplementation 'org.mockito:mockito-core:5.2.0'
+testImplementation 'org.junit.jupiter:junit-jupiter:5.9.0'
 ```
+
+---
+
+### 2. Create a Sample Service to Test
+
+Suppose there is a `UserService` class that depends on `UserRepository`:
+
+```java
+public class UserService {
+
+    private final UserRepository userRepository;
+
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    public User getUserById(int id) {
+        return userRepository.findById(id);
+    }
+}
+```
+
+The `UserService` calls `UserRepository`, which will be mocked in the test.
+
+---
+
+### 3. Write a JUnit Test Using Mockito
+
+Create a test class and use Mockito with JUnit 5.
+
+```java
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+class UserServiceTest {
+
+    @Mock  // Creates a mock of UserRepository
+    private UserRepository userRepository;
+
+    @InjectMocks  // Injects the mock into UserService
+    private UserService userService;
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);  // Initializes mocks
+    }
+
+    @Test
+    void testGetUserById() {
+        // Arrange: Define mock behavior
+        User mockUser = new User(1, "Alice");
+        when(userRepository.findById(1)).thenReturn(mockUser);
+
+        // Act: Call the method under test
+        User result = userService.getUserById(1);
+
+        // Assert: Verify expected behavior
+        assertNotNull(result);
+        assertEquals("Alice", result.getName());
+        verify(userRepository, times(1)).findById(1); // Ensure method was called once
+    }
+}
+```
+
+---
+
+### 4. Explanation of the Test
+
+* **Mock Creation**: `@Mock` creates a fake `UserRepository` object.
+* **Dependency Injection**: `@InjectMocks` injects the mock into `UserService`.
+* **Mock Initialization**: `MockitoAnnotations.openMocks(this)` initializes mocks before each test.
+* **Defining Behavior**: `when(userRepository.findById(1)).thenReturn(mockUser)` tells Mockito what to return.
+* **Assertions**: `assertEquals("Alice", result.getName())` checks the output.
+* **Verification**: `verify(userRepository, times(1)).findById(1)` ensures the method was called exactly once.
+
+---
+
+## Best Practices for Unit Testing with JUnit and Mockito
+
+Effective unit testing enhances code reliability and maintainability. JUnit and Mockito facilitate well-structured, efficient, and maintainable tests.
+
+### Best Practices
+
+* **Use the Arrange–Act–Assert (AAA) Pattern**
+
+  * **Arrange**: Initialize test data and dependencies.
+  * **Act**: Invoke the method under test.
+  * **Assert**: Verify the expected outcome.
+
+* **Provide Meaningful Test Method Names**
+  Use descriptive names such as `methodName_condition_expectedOutcome` to make tests self-explanatory.
+
+* **Keep Tests Small and Focused**
+  Each test should validate only one behavior. This improves readability, maintainability, and debugging.
+
+* **Mock Only External Dependencies**
+  Mock databases, APIs, or file systems. Avoid mocking the class under test to ensure real logic is validated.
+
+* **Verify Interactions with Dependencies**
+  Use Mockito’s verification features to ensure dependencies are invoked correctly, especially for critical interactions.
+
+* **Test Edge Cases and Exceptions**
+  Include tests for invalid inputs, null values, and exceptional scenarios to improve robustness.
+
+* **Use `@BeforeEach` to Reduce Duplication**
+  Initialize common objects in setup methods to keep test code clean and DRY.
+
+* **Avoid Testing Implementation Details**
+  Focus on observable behavior rather than internal implementation.
+
+* **Ensure Tests Run Independently**
+  Tests should not depend on execution order or shared state.
+
+* **Automate and Run Tests Regularly**
+  Integrate unit tests into CI/CD pipelines to catch issues early and maintain application stability.
+
